@@ -34,34 +34,35 @@
   .btn:hover{border-color:var(--lima);color:var(--lima)}
   .btn:focus-visible,input:focus-visible{outline:2px solid var(--lima);outline-offset:2px}
 
-  /* ---------- Dial protagonista ---------- */
-  .dial{background:linear-gradient(135deg,#1d2417,#15180f);border:1px solid var(--lima-deep);
-        border-radius:18px;padding:20px 24px;margin-bottom:18px}
+  /* ---------- Acto 1: el control y su consecuencia, en una sola pieza ---------- */
+  .deal{border:1px solid var(--lima-deep);border-radius:20px;margin-bottom:20px;overflow:hidden;
+        background:linear-gradient(150deg,#1c2316,#141710 62%)}
+  .deal-in{padding:22px 26px}
   .dial-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
-  .dial-val{font-family:'Fraunces',serif;font-size:52px;font-weight:700;color:var(--lima);
-            line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1.5px}
-  input[type=range]{width:100%;accent-color:var(--lima);margin-top:16px;cursor:pointer}
-  .presets{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+  .dial-val{font-family:'Fraunces',serif;font-size:60px;font-weight:700;color:var(--lima);
+            line-height:.92;font-variant-numeric:tabular-nums;letter-spacing:-2px}
+  input[type=range]{width:100%;accent-color:var(--lima);margin-top:18px;cursor:pointer}
+  .presets{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}
   .pbtn{background:#0e0f0d80;border:1px solid var(--line2);color:var(--mut);padding:6px 13px;border-radius:8px;
         cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;transition:.1s}
   .pbtn:hover{color:var(--txt);border-color:var(--lima-dim)}
   .pbtn.on{background:var(--lima);color:#0e0f0d;border-color:var(--lima)}
 
+  /* el reparto vive DENTRO de la misma pieza: mover el slider y ver el resultado es un solo gesto */
+  .split{display:grid;grid-template-columns:1.5fr 1fr;border-top:1px solid var(--lima-deep)}
+  @media(max-width:620px){.split{grid-template-columns:1fr}
+    .who+.who{border-left:none;border-top:1px solid var(--lima-deep)}}
+  .who{padding:20px 26px}
+  .who+.who{border-left:1px solid var(--lima-deep)}
+  .who .k{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:600}
+  .who .v{font-family:'Fraunces',serif;font-weight:700;margin-top:7px;line-height:1;
+          font-variant-numeric:tabular-nums;letter-spacing:-1.4px}
+  .who.clara .v{font-size:50px;color:var(--lima)}
+  .who.maze .v{font-size:36px;color:var(--gold)}
+  .who .pct{font-size:12.5px;color:var(--dim);margin-top:9px;font-variant-numeric:tabular-nums}
+
   .layout{display:grid;grid-template-columns:1fr 310px;gap:18px;align-items:start}
   @media(max-width:1000px){.layout{grid-template-columns:1fr}}
-
-  /* ---------- Reparto ---------- */
-  .split{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:18px}
-  @media(max-width:620px){.split{grid-template-columns:1fr}}
-  .who{border:1px solid var(--line);border-radius:16px;padding:19px 21px}
-  .who.clara{background:linear-gradient(135deg,#1d2417,#14170f);border-color:var(--lima-deep)}
-  .who.maze{background:linear-gradient(135deg,#211d13,#17130d);border-color:var(--gold-deep)}
-  .who .k{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--mut);font-weight:600}
-  .who .v{font-family:'Fraunces',serif;font-weight:700;margin-top:6px;line-height:1;
-          font-variant-numeric:tabular-nums;letter-spacing:-1px}
-  .who.clara .v{font-size:46px;color:var(--lima)}
-  .who.maze .v{font-size:34px;color:var(--gold)}
-  .who .pct{font-size:12.5px;color:var(--dim);margin-top:9px;font-variant-numeric:tabular-nums}
   .flag{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 11px;border-radius:20px;
         font-size:12px;font-weight:600;border:1px solid}
   .flag.ok{color:var(--pos);border-color:#2a4030;background:#0f1712}
@@ -69,22 +70,39 @@
 
   /* ---------- Signature: la escalera de tickets ---------- */
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:18px}
-  .stair{display:flex;gap:5px;align-items:flex-end;min-height:104px;margin:4px 0 2px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
-  .tk{flex:1 1 0;min-width:34px;border-radius:7px 7px 4px 4px;position:relative;overflow:hidden;
-      border:1px solid var(--line2);display:flex;flex-direction:column-reverse;transition:height .18s ease}
-  .tk .seg{width:100%}
-  .tk .seg.c{background:linear-gradient(180deg,#9bcb35,#C5FF49)}
-  .tk .seg.m{background:linear-gradient(180deg,#e8c468,#b6923c)}
-  .tk .n{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:10.5px;font-weight:700;
-         color:#0e0f0d;font-variant-numeric:tabular-nums;z-index:2;mix-blend-mode:hard-light}
-  .tk.wide{flex:2.4 1 0}
-  .tk.wide .n{font-size:10px;top:6px;line-height:1.2;padding:0 3px}
-  .stair-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--mut)}
-  .stair-legend b{color:var(--txt);font-weight:600}
-  .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:baseline}
-  .dot.c{background:var(--lima)} .dot.m{background:var(--gold)}
-  .zones{display:flex;gap:5px;margin-top:9px;font-size:11px;color:var(--dim)}
-  .zone{text-align:center;border-top:1px solid var(--line2);padding-top:5px;line-height:1.3}
+  /* la letra chica: es respaldo del argumento, no el argumento */
+  .card.quiet{background:none;border:none;border-top:1px solid var(--line);border-radius:0;
+              padding:17px 2px 0;margin-bottom:22px}
+  .card.quiet h2{color:var(--mut)}
+  /* ---------- Signature: el orden de cobro ----------
+     La barra es la ESTRUCTURA del acuerdo (fija, siempre visible).
+     Encima, en color pleno, hasta dónde llegó este mes. */
+  .prel{position:relative;height:64px;border-radius:10px;overflow:hidden;background:#101208;
+        border:1px solid var(--line2)}
+  .band{position:absolute;top:0;bottom:0}
+  .band.ghost{opacity:.13}                    /* la estructura: siempre ahí, aunque no se haya llegado */
+  .band.live{opacity:1;transition:width .18s ease}
+  .b-clara{background:linear-gradient(180deg,#9bcb35,#C5FF49)}
+  .b-maze{background:linear-gradient(180deg,#e8c468,#b6923c)}
+  .b-mix{background:linear-gradient(180deg,#e8c468 0 20%,#C5FF49 20% 100%)}
+  .sale{position:absolute;top:0;bottom:0;width:1px;background:#0e0f0d;opacity:.3}  /* corte entre ventas */
+  .edge{position:absolute;top:0;bottom:0;width:1px;background:#eef0ea66}
+  .now{position:absolute;top:0;bottom:0;width:2px;background:var(--txt);transition:left .18s ease}
+  .prel-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+       color:var(--dim);font-size:12.5px}
+  .nowlbl{position:relative;height:17px;margin-top:5px;font-size:11px;color:var(--txt);font-weight:600}
+  .nowlbl span{position:absolute;transform:translateX(-50%);white-space:nowrap;transition:left .18s ease;
+       font-variant-numeric:tabular-nums}
+  .nowlbl span::before{content:'';position:absolute;left:50%;top:-6px;width:1px;height:5px;background:var(--line2)}
+  /* la leyenda explica el acuerdo en texto plano: nada que se pise ni que dependa del ancho */
+  .rules{margin-top:14px;display:grid;gap:7px}
+  .rule{display:flex;gap:9px;align-items:baseline;font-size:12.5px;color:var(--mut);line-height:1.4}
+  .rule i{width:9px;height:9px;border-radius:3px;flex:none;position:relative;top:3px}
+  .rule b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
+  .rule.off{opacity:.4}                        /* tramo al que este mes todavía no llegó */
+  .i-clara{background:var(--lima)} .i-maze{background:var(--gold)}
+  .i-mix{background:linear-gradient(180deg,#e8c468 0 40%,#C5FF49 40% 100%)}
+  .prel-foot{margin-top:13px;font-size:11.5px;color:var(--dim);line-height:1.5}
 
   /* ---------- Relato paso a paso ---------- */
   .story{list-style:none;counter-reset:paso;margin:0}
@@ -151,6 +169,22 @@
   .note{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:9px}
   footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);color:var(--dim);font-size:12px;line-height:1.6}
 
+  /* ---------- Móvil: las cifras grandes no entran a 375px ---------- */
+  @media(max-width:560px){
+    body{padding:18px 16px 32px}
+    h1{font-size:23px}
+    .deal-in,.who{padding:18px}
+    .dial-val{font-size:42px;letter-spacing:-1.2px}
+    .who.clara .v{font-size:38px;letter-spacing:-1px}
+    .who.maze .v{font-size:30px}
+    .dial-top{gap:4px}
+    .dial-top>div:last-child{text-align:left!important}
+    .dial-top>div:last-child>div:last-child{font-size:19px!important}
+    .card{padding:16px 15px}
+    .story li{padding-left:32px}
+    .prel{height:54px}
+  }
+
   @media print{
     body{background:#fff;color:#000;padding:0;max-width:none}
     .panel{position:static}
@@ -169,37 +203,47 @@
   <button class="btn" onclick="window.print()">Descargar en PDF</button>
 </header>
 
-<!-- Dial protagonista -->
-<section class="dial">
-  <div class="dial-top">
-    <div>
-      <div class="eyebrow">Facturación del mes</div>
-      <div class="dial-val" id="dFact">$20.000</div>
+<!-- Acto 1: mover la facturación y ver el reparto son el mismo gesto -->
+<section class="deal">
+  <div class="deal-in">
+    <div class="dial-top">
+      <div>
+        <div class="eyebrow">Facturación del mes</div>
+        <div class="dial-val" id="dFact">$20.000</div>
+      </div>
+      <div style="text-align:right">
+        <div class="eyebrow">Ventas cerradas</div>
+        <div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--txt);margin-top:4px" id="dTickets">6,7 tickets</div>
+      </div>
     </div>
-    <div style="text-align:right">
-      <div class="eyebrow">Ventas cerradas</div>
-      <div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--txt);margin-top:4px" id="dTickets">6,7 tickets</div>
+    <input type="range" id="rFact" min="0" max="60000" step="500" value="20000" aria-label="Facturación del mes">
+    <div class="presets" id="presets"></div>
+  </div>
+  <div class="split">
+    <div class="who clara">
+      <div class="k">Clara se lleva</div>
+      <div class="v" id="vClara">$0</div>
+      <div class="pct" id="pClara"></div>
+      <div id="flagClara"></div>
+    </div>
+    <div class="who maze">
+      <div class="k">Maze se lleva</div>
+      <div class="v" id="vMaze">$0</div>
+      <div class="pct" id="pMaze"></div>
     </div>
   </div>
-  <input type="range" id="rFact" min="0" max="60000" step="500" value="20000" aria-label="Facturación del mes">
-  <div class="presets" id="presets"></div>
 </section>
 
 <div class="layout">
   <main>
-    <!-- Reparto -->
-    <section class="split">
-      <div class="who clara">
-        <div class="k">Clara se lleva</div>
-        <div class="v" id="vClara">$0</div>
-        <div class="pct" id="pClara"></div>
-        <div id="flagClara"></div>
-      </div>
-      <div class="who maze">
-        <div class="k">Maze se lleva</div>
-        <div class="v" id="vMaze">$0</div>
-        <div class="pct" id="pMaze"></div>
-      </div>
+
+    <!-- Signature: el orden de cobro -->
+    <section class="card">
+      <h2>El orden de cobro</h2>
+      <div class="prel" id="prel"></div>
+      <div class="nowlbl" id="nowlbl"></div>
+      <div class="rules" id="rules"></div>
+      <div class="prel-foot" id="prelNote"></div>
     </section>
 
     <!-- Relato: la historia detrás del dato -->
@@ -208,20 +252,8 @@
       <ol class="story" id="story"></ol>
     </section>
 
-    <!-- Signature: la escalera -->
-    <section class="card">
-      <h2>Venta por venta, a dónde va la plata</h2>
-      <div class="stair" id="stair"></div>
-      <div class="zones" id="zones"></div>
-      <div class="stair-legend">
-        <span><i class="dot c"></i><b>Clara</b></span>
-        <span><i class="dot m"></i><b>Maze</b></span>
-        <span id="legendNote" style="color:var(--dim)"></span>
-      </div>
-    </section>
-
     <!-- Cuenta -->
-    <section class="card">
+    <section class="card quiet">
       <h2>La cuenta del mes</h2>
       <table class="rows">
         <tr><td class="lbl">Facturación bruta</td><td id="rFactura">—</td></tr>
@@ -233,7 +265,7 @@
     </section>
 
     <!-- Comparador -->
-    <section class="card">
+    <section class="card quiet">
       <h2>Este acuerdo vs. 20% plano desde la primera venta</h2>
       <div class="vs">
         <div class="vsbox on">
@@ -341,57 +373,53 @@ function calc() {
           sobrante: clara - fijos, tickets: T > 0 ? F / T : 0};
 }
 
-function renderStair(d) {
-  const stair = $('stair'), zones = $('zones');
-  if (d.F <= 0 || d.T <= 0) {
-    stair.innerHTML = '<p style="color:var(--dim);font-size:13px;align-self:center">Sin facturación este mes: nadie cobra, y Maze absorbe el riesgo.</p>';
-    zones.innerHTML = ''; $('legendNote').textContent = '';
-    return;
+function renderPrelacion(d) {
+  const MAX = +$('rFact').max;
+  const pct = x => Math.max(0, Math.min(100, x / MAX * 100));
+
+  // La estructura del acuerdo depende de cuánto sobrevive cada peso facturado.
+  // Con el mes en cero no hay referencia, así que se dibuja con la del mes tope.
+  let u1 = d.u1, u2 = d.u2;
+  if (!isFinite(u1)) {
+    const com = MAX * (+$('iComPct').value || 0) / 100 + (+$('iComFijo').value || 0);
+    const fRef = Math.max(0, MAX - (+$('iAds').value || 0) - com) / MAX;
+    u1 = MODE === 'piso' ? (fRef > 0 ? d.fijos / fRef : MAX) : d.nT * d.T;
+    u2 = u1 + d.T;
   }
-  const total = Math.ceil(d.F / d.T - 1e-9);
-  const MAX = 14;                    // ventas mostradas una por una
-  const shown = Math.min(total, MAX);
-  const grouped = total > shown;     // el resto se agrupa en un bloque
+
+  const tramos = [
+    {ini: 0, fin: u1, cls: 'b-clara', ico: 'i-clara',
+     txt: MODE === 'piso'
+       ? `<b>Los primeros ${money(u1)}</b> que se facturen van enteros a Clara — con eso le quedan sus ${money(d.fijos)} limpios. Maze todavía no cobra.`
+       : `<b>Las primeras ${d.nT} ventas</b> (${money(u1)}) van enteras a Clara. Maze todavía no cobra.`},
+    {ini: u1, fin: u2, cls: 'b-maze', ico: 'i-maze',
+     txt: `<b>La venta siguiente</b> — de ${money(u1)} a ${money(u2)} — va entera a Maze. Es lo que compensa haber cobrado cero en los meses flojos.`},
+    {ini: u2, fin: MAX, cls: 'b-mix', ico: 'i-mix',
+     txt: `<b>De ahí en adelante</b>, cada peso se parte ${Math.round((1 - d.s) * 100)} / ${Math.round(d.s * 100)}. Cuanto más se factura, más se llevan las dos.`},
+  ];
+
   let html = '';
-
-  // Para cada venta: cuánto de ELLA va a Maze, según la misma fórmula que los totales
-  const mazeDe = (ini, fin) => {
-    const bruto = fin - ini;
-    return bruto > 0 ? (d.mazeHasta(fin) - d.mazeHasta(ini)) / bruto : 0;
-  };
-
-  const push = (ini, fin, label, wide) => {
-    const bruto = fin - ini;
-    const toMaze = Math.min(1, Math.max(0, mazeDe(ini, fin)));
-    const h = 34 + 66 * Math.min(1, bruto / (wide ? bruto : d.T));
-    html += `<div class="tk${wide ? ' wide' : ''}" style="height:${h}px"
-        title="${label.replace('–', ' a ')} · ${money(bruto)} facturados · ${Math.round(toMaze * 100)}% para Maze">
-        <div class="seg c" style="height:${(1 - toMaze) * 100}%"></div>
-        <div class="seg m" style="height:${toMaze * 100}%"></div>
-        <span class="n">${label}</span></div>`;
-  };
-
-  for (let i = 1; i <= shown; i++) {
-    const ini = (i - 1) * d.T, fin = Math.min(i * d.T, d.F);
-    if (fin <= ini) break;
-    push(ini, fin, String(i), false);
+  for (const t of tramos) {
+    const a = pct(t.ini), b = pct(t.fin);
+    if (b - a < 0.1) continue;
+    html += `<div class="band ghost ${t.cls}" style="left:${a}%;width:${b - a}%"></div>`;
+    const vivo = pct(Math.min(t.fin, d.F)) - a;   // lo que este mes efectivamente alcanzó
+    if (vivo > 0.1) html += `<div class="band live ${t.cls}" style="left:${a}%;width:${vivo}%"></div>`;
   }
-  if (grouped) push(shown * d.T, d.F, `${shown + 1}–${total}`, true);
-  stair.innerHTML = html;
+  for (let x = d.T; x < MAX; x += d.T) html += `<div class="sale" style="left:${pct(x)}%"></div>`;
+  html += `<div class="edge" style="left:${pct(u1)}%"></div><div class="edge" style="left:${pct(u2)}%"></div>`;
+  html += `<div class="now" style="left:${pct(d.F)}%"></div>`;
+  if (d.F <= 0) html += '<div class="prel-empty">Este mes no entró nada. Maze absorbe el riesgo.</div>';
+  $('prel').innerHTML = html;
 
-  // Zonas debajo: dónde caen los umbrales, medidos en ventas
-  const vU1 = d.u1 / d.T, vU2 = d.u2 / d.T, vF = d.F / d.T;
-  const zA = Math.min(vU1, vF);                            // todo a Clara
-  const zB = Math.min(Math.max(vF - vU1, 0), vU2 - vU1);   // compensación a Maze
-  const zC = Math.max(vF - vU2, 0);                        // reparto parejo
-  let z = '';
-  const pisoTxt = MODE === 'piso' ? 'Cubren el piso de Clara' : `Primeras ${d.nT} ventas: 100% Clara`;
-  if (zA > .02) z += `<div class="zone" style="flex:${zA}">${pisoTxt}</div>`;
-  if (zB > .02) z += `<div class="zone" style="flex:${zB}">Compensa a Maze</div>`;
-  if (zC > .02) z += `<div class="zone" style="flex:${zC}">Reparto ${Math.round((1 - d.s) * 100)} / ${Math.round(d.s * 100)}</div>`;
-  zones.innerHTML = z;
+  $('nowlbl').innerHTML = `<span style="left:${pct(d.F)}%">${money(d.F)} este mes</span>`;
 
-  $('legendNote').textContent = `Cada bloque es una venta de ${money(d.T)}. El color muestra para quién va.`;
+  // El tramo al que todavía no se llegó se atenúa: se ve que existe, pero que no aplica aún
+  $('rules').innerHTML = tramos.map(t =>
+    `<div class="rule${d.F > t.ini + 1 ? '' : ' off'}"><i class="${t.ico}"></i><span>${t.txt}</span></div>`).join('');
+
+  $('prelNote').textContent =
+    `La barra es el acuerdo completo hasta ${money(MAX)} de facturación. En color pleno, hasta dónde llegó este mes. Cada línea fina es una venta de ${money(d.T)}.`;
 }
 
 // La historia detrás del dato: qué le pasa a la plata, paso a paso, según dónde esté el slider
@@ -515,7 +543,7 @@ function render() {
   $('verdict').innerHTML = v;
 
   renderStory(d);
-  renderStair(d);
+  renderPrelacion(d);
 }
 
 // --- Mecanismo del reparto ---
