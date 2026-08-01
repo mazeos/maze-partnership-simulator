@@ -86,6 +86,27 @@
   .zones{display:flex;gap:5px;margin-top:9px;font-size:11px;color:var(--dim)}
   .zone{text-align:center;border-top:1px solid var(--line2);padding-top:5px;line-height:1.3}
 
+  /* ---------- Relato paso a paso ---------- */
+  .story{list-style:none;counter-reset:paso;margin:0}
+  .story li{counter-increment:paso;position:relative;padding:0 0 17px 38px}
+  .story li::before{
+    content:counter(paso);position:absolute;left:0;top:0;width:23px;height:23px;border-radius:50%;
+    background:var(--card2);border:1px solid var(--line2);color:var(--mut);
+    font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    font-variant-numeric:tabular-nums}
+  /* la línea que conecta los pasos: el dinero bajando */
+  .story li::after{content:'';position:absolute;left:11px;top:26px;bottom:2px;width:1px;background:var(--line)}
+  .story li:last-child{padding-bottom:0}
+  .story li:last-child::after{display:none}
+  .story li.hit::before{background:var(--lima);border-color:var(--lima);color:#0e0f0d}
+  .story li.hit-m::before{background:var(--gold);border-color:var(--gold);color:#0e0f0d}
+  .story li.hit-r::before{background:var(--neg);border-color:var(--neg);color:#1a1010}
+  .story .st{font-weight:600;font-size:13.5px;color:var(--txt);margin-bottom:2px}
+  .story .sd{font-size:13px;color:var(--mut);line-height:1.55}
+  .story .sd b{color:var(--lima);font-weight:600;font-variant-numeric:tabular-nums}
+  .story .sd b.m{color:var(--gold)}
+  .story .sd b.r{color:var(--neg)}
+
   /* ---------- Cuenta ---------- */
   .rows{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
   .rows td{padding:8px 0;border-bottom:1px solid #23261f;font-size:13.5px}
@@ -179,6 +200,12 @@
         <div class="v" id="vMaze">$0</div>
         <div class="pct" id="pMaze"></div>
       </div>
+    </section>
+
+    <!-- Relato: la historia detrás del dato -->
+    <section class="card">
+      <h2>Qué pasa con la plata este mes</h2>
+      <ol class="story" id="story"></ol>
     </section>
 
     <!-- Signature: la escalera -->
@@ -307,7 +334,9 @@ function calc() {
   const maze  = mazeHasta(F) * f;
   const clara = neto - maze;
 
-  return {F, T, A, com, neto, f, fijos, nT, s, u1, u2, mazeHasta, clara, maze,
+  const b3 = Math.max(0, F - u2);   // lo que cae en el tramo de reparto parejo
+
+  return {F, T, A, com, neto, f, fijos, nT, s, u1, u2, b3, mazeHasta, clara, maze,
           claraPlano: neto * (1 - s), mazePlano: neto * s,
           sobrante: clara - fijos, tickets: T > 0 ? F / T : 0};
 }
@@ -365,6 +394,82 @@ function renderStair(d) {
   $('legendNote').textContent = `Cada bloque es una venta de ${money(d.T)}. El color muestra para quién va.`;
 }
 
+// La historia detrás del dato: qué le pasa a la plata, paso a paso, según dónde esté el slider
+function renderStory(d) {
+  const P = [];
+  const push = (st, sd, hit) => P.push({st, sd, hit});
+  const L = n => `<b>${money(n)}</b>`;          // monto del lado de Clara
+  const M = n => `<b class="m">${money(n)}</b>`; // monto del lado de Maze
+  const R = n => `<b class="r">${money(n)}</b>`; // lo que falta
+
+  if (d.F <= 0) {
+    push('No entró plata', 'Sin ventas no hay nada que repartir. Clara no le debe nada a Maze, y Maze igual sostuvo el mes. Ese riesgo es parte del acuerdo.');
+    $('story').innerHTML = P.map(p => `<li><div class="st">${p.st}</div><div class="sd">${p.sd}</div></li>`).join('');
+    return;
+  }
+
+  // 1 · entra la plata
+  const ventas = d.F / d.T;
+  push('Entran las ventas',
+    `Este mes se facturaron ${L(d.F)} — unas <b>${ventas.toFixed(1).replace('.', ',')}</b> ventas de ${L(d.T)} cada una.`);
+
+  // 2 · costo de vender
+  push('Se paga lo que costó vender',
+    `Salen ${R(d.A)} de pauta publicitaria y ${R(d.com)} de comisiones del equipo comercial. Quedan ${L(d.neto)} limpios. ` +
+    `Sobre esa base — y no sobre el bruto — se reparte, así el costo de vender lo absorben los dos.`);
+
+  // 3 · el piso de Clara
+  const claraEnPiso = Math.min(d.clara, d.fijos);
+  if (d.sobrante < 0) {
+    push('Clara todavía no cubre su piso',
+      (MODE === 'piso'
+        ? `Clara necesita ${L(d.fijos)} para sostener su operación. Los ${L(d.clara)} que quedaron van <b>enteros</b> para ella y aun así le faltan ${R(-d.sobrante)}.`
+        : `Las primeras ${d.nT} ventas (${L(Math.min(d.F, d.u1))} facturados) van enteras a Clara. Pero después de pauta y comisiones eso son ${L(claraEnPiso)}: le faltan ${R(-d.sobrante)} para sus ${L(d.fijos)} de fijos.`),
+      'hit');
+  } else {
+    push('Primero se cubre el piso de Clara',
+      (MODE === 'piso'
+        ? `Clara necesita ${L(d.fijos)} para sostener su operación. Hacen falta ${L(d.u1)} de facturación para que le queden esos ${L(d.fijos)} limpios, y <b>todo eso va entero para ella</b>. Hasta ahí, Maze cobra cero.`
+        : `Las primeras ${d.nT} ventas — ${L(d.u1)} facturados — van <b>enteras</b> para Clara. Con eso cubre sus ${L(d.fijos)} de fijos. Hasta ahí, Maze cobra cero.`),
+      'hit');
+  }
+
+  // 4 · la venta que compensa a Maze
+  const brutoComp = Math.min(Math.max(d.F - d.u1, 0), d.T);
+  if (brutoComp > 0) {
+    const parcial = brutoComp < d.T - 0.5;
+    const corta = d.sobrante < 0;   // Maze cobrando con Clara bajo su piso: el agujero del mecanismo literal
+    push(corta ? 'Y sin embargo Maze ya cobra' : 'Recién ahí Maze recupera',
+      `La venta siguiente va <b class="m">100% a Maze</b>: ${M(brutoComp)} facturados, ${M(brutoComp * d.f)} limpios. ` +
+      (parcial ? 'Este mes esa venta entró solo a medias, así que Maze cobra apenas una parte. ' : '') +
+      (corta
+        ? `<b class="r">Acá está el problema de contar por ventas:</b> Clara todavía está ${R(-d.sobrante)} corta de sus fijos y Maze ya se está llevando plata. Con el otro mecanismo esto no pasa.`
+        : `Es lo que compensa haber cobrado cero en los meses flojos: Maze pone el hombro abajo y lo recupera acá.`),
+      corta ? 'hit-r' : 'hit-m');
+  } else if (d.sobrante >= 0) {
+    push('Maze todavía no recupera',
+      `Justo se cubrió el piso de Clara. La venta siguiente es la que va entera a Maze — todavía no llegó.`);
+  }
+
+  // 5 · de ahí en adelante, parejo
+  if (d.b3 > 0) {
+    push(`De ahí en adelante, ${Math.round((1 - d.s) * 100)} / ${Math.round(d.s * 100)}`,
+      `Sobran ${L(d.b3)} facturados (${L(d.b3 * d.f)} limpios). De eso, ${L(d.b3 * d.f * (1 - d.s))} para Clara y ${M(d.b3 * d.f * d.s)} para Maze. ` +
+      `Este es el tramo donde los dos ganan juntos: cuanto más se factura, más se llevan los dos.`,
+      'hit');
+  }
+
+  // 6 · cierre
+  push('Cómo termina el mes',
+    `Clara se lleva ${L(d.clara)}` +
+    (d.sobrante >= 0 ? ` — cubre sus fijos y le sobran ${L(d.sobrante)}` : ` y queda ${R(-d.sobrante)} corta de sus fijos`) +
+    `. Maze se lleva ${M(d.maze)}` +
+    (d.maze < 1 ? ' — o sea, nada.' : `, que es el ${Math.round(d.maze / d.neto * 100)}% de lo que quedó limpio.`));
+
+  $('story').innerHTML = P.map(p =>
+    `<li class="${p.hit || ''}"><div class="st">${p.st}</div><div class="sd">${p.sd}</div></li>`).join('');
+}
+
 function render() {
   const d = calc();
 
@@ -409,6 +514,7 @@ function render() {
   }
   $('verdict').innerHTML = v;
 
+  renderStory(d);
   renderStair(d);
 }
 
