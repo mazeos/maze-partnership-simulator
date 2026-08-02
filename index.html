@@ -598,7 +598,13 @@ function renderStory(d) {
 // el slider, cada cambio reanuda desde donde iba, así el número nunca da un tirón.
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function tweenMoney(el, to, ms = 900) {
-  if (REDUCE) { el.textContent = money(to); return; }
+  // En una pestaña oculta el navegador no corre requestAnimationFrame: el tween
+  // se quedaría a mitad y el monto mostrado sería falso. Ahí se escribe directo.
+  if (REDUCE || document.hidden) {
+    const st = el._tw || (el._tw = {cur: to, raf: 0});
+    cancelAnimationFrame(st.raf); st.cur = to; el.textContent = money(to);
+    return;
+  }
   const st = el._tw || (el._tw = {cur: to, raf: 0});
   cancelAnimationFrame(st.raf);
   const from = st.cur;
@@ -689,6 +695,8 @@ document.querySelector('.mbtn.on').click();
 
 ['rFact','iTicket','iAds','iComPct','iComFijo','iFijos','iNT','iSplit']
   .forEach(id => $(id).addEventListener('input', render));
+// Al volver a la pestaña, repintar por si algún tween quedó cortado
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
 render();
 </script>
 </body>
