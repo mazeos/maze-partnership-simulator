@@ -352,7 +352,7 @@
     <div class="grp">
       <h2>Reglas del reparto</h2>
       <div class="modes">
-        <button class="mbtn on" data-mode="piso">Hasta cubrir el piso</button>
+        <button class="mbtn on" data-mode="piso">Piso y recuperación</button>
         <button class="mbtn" data-mode="tickets">Por cantidad de ventas</button>
       </div>
       <div class="field" id="fNT" hidden><label for="iNT">Ventas 100% para vos</label><input type="number" id="iNT" value="3" min="0" max="10" step="1"></div>
@@ -388,38 +388,50 @@ function calc() {
   const F     = +$('rFact').value;
   const T     = Math.max(100, +$('iTicket').value || 3000);
   const A     = Math.max(0, +$('iAds').value || 0);
-  const cPct  = Math.max(0, +$('iComPct').value || 0) / 100;
+  const cPct  = Math.min(.95, Math.max(0, +$('iComPct').value || 0) / 100);
   const cFijo = Math.max(0, +$('iComFijo').value || 0);
   const fijos = Math.max(0, +$('iFijos').value || 0);
   const nT    = Math.max(0, Math.round(+$('iNT').value || 0));
-  const s     = Math.max(0, +$('iSplit').value || 0) / 100;
+  const s     = Math.min(.95, Math.max(0, +$('iSplit').value || 0) / 100);
 
-  // Costo de vender: sale antes de repartir
-  const com = F > 0 ? F * cPct + cFijo : 0;
-  const neto = Math.max(0, F - A - com);
-  const f = F > 0 ? neto / F : 0;   // qué porción de cada peso facturado sobrevive
+  // Cuánto queda limpio cuando se facturaron x. La pauta y el fijo comercial NO son
+  // proporcionales: salen enteros al principio, así que hasta cubrirlos no hay nada que repartir.
+  const netoDe  = x => Math.max(0, x * (1 - cPct) - A - cFijo);
+  const brutoDe = n => (n + A + cFijo) / (1 - cPct);
 
-  // Los dos umbrales, expresados en facturación bruta:
-  //  u1 = hasta acá todo va al socio · entre u1 y u2 = la venta que compensa a Maze
-  let u1;
+  const com  = F > 0 ? F * cPct + cFijo : 0;
+  const neto = netoDe(F);
+  const f    = F > 0 ? neto / F : 0;
+
+  // Los dos umbrales del reparto, en NETO:
+  //   a = hasta acá todo va al socio · de a a b, Maze cobra el 100% · pasado b, reparto fijo
+  let a, b;
   if (MODE === 'piso') {
-    // cuánto hay que facturar para que al socio le queden sus fijos LIMPIOS
-    u1 = f > 0 ? fijos / f : Infinity;
+    // Maze resigna su parte mientras el socio cubre sus fijos, y después la recupera
+    // entera. Queda equiparado cuando lo acumulado es exactamente su % del neto:
+    //   b - a = s·b   →   b = a / (1 - s)
+    a = fijos;
+    b = fijos / (1 - s);
   } else {
-    u1 = nT * T;
+    // Literal: las primeras nT ventas al socio, la siguiente entera a Maze
+    a = netoDe(nT * T);
+    b = netoDe((nT + 1) * T);
   }
-  const u2 = u1 + T;
+  const tramoMaze = Math.max(0, b - a);   // lo que Maze recupera al 100%
 
-  // Cuánto de Maze hay acumulado hasta una facturación bruta x (misma fórmula en ambos modos)
-  const mazeHasta = x => Math.min(Math.max(x - u1, 0), T) + Math.max(x - u2, 0) * s;
-
-  const maze  = mazeHasta(F) * f;
+  const mazeDe = n => Math.min(Math.max(n - a, 0), tramoMaze) + Math.max(0, n - b) * s;
+  const maze  = mazeDe(neto);
   const socio = neto - maze;
 
-  const b3 = Math.max(0, F - u2);   // lo que cae en el tramo de reparto parejo
+  // Los mismos umbrales llevados a facturación, para dibujar la barra
+  const u1 = brutoDe(a), u2 = brutoDe(b);
+  const b3 = Math.max(0, F - u2);         // lo que cae en el tramo de reparto parejo
 
-  return {F, T, A, com, neto, f, fijos, nT, s, u1, u2, b3, mazeHasta, socio, maze,
+  return {F, T, A, com, neto, f, fijos, nT, s, a, b, tramoMaze, u1, u2, b3,
+          netoDe, brutoDe, mazeDe, socio, maze,
           socioPlano: neto * (1 - s), mazePlano: neto * s,
+          resigna: a * s,                                  // lo que Maze deja de cobrar abajo
+          recuperado: Math.min(Math.max(neto - a, 0), tramoMaze),
           sobrante: socio - fijos, tickets: T > 0 ? F / T : 0};
 }
 
@@ -460,7 +472,9 @@ function renderPrelacion(d) {
        ? `<b>Los primeros ${money(u1)}</b> que se facturen van enteros para vos — con eso te quedan tus ${money(d.fijos)} limpios. Maze todavía no cobra.`
        : `<b>Las primeras ${d.nT} ventas</b> (${money(u1)}) van enteras para vos. Maze todavía no cobra.`},
     {ini: u1, fin: u2, ico: 'i-maze',
-     txt: `<b>La venta siguiente</b> — de ${money(u1)} a ${money(u2)} — va entera a Maze. Es lo que compensa haber cobrado cero en los meses flojos.`},
+     txt: MODE === 'piso'
+       ? `<b>De ${money(u1)} a ${money(u2)}</b> Maze cobra el 100%, hasta recuperar los ${money(d.tramoMaze)} que le habrían tocado desde el primer peso. Puede ser una venta o varias.`
+       : `<b>La venta siguiente</b> — de ${money(u1)} a ${money(u2)} — va entera a Maze.`},
     {ini: u2, fin: MAX, ico: 'i-mix',
      txt: `<b>De ahí en adelante</b>, cada peso se parte ${Math.round((1 - d.s) * 100)} / ${Math.round(d.s * 100)}. Cuanto más se factura, más se llevan las dos.`},
   ];
@@ -534,27 +548,33 @@ function renderStory(d) {
       'hit');
   }
 
-  // 4 · la venta que compensa a Maze
-  const brutoComp = Math.min(Math.max(d.F - d.u1, 0), d.T);
-  if (brutoComp > 0) {
-    const parcial = brutoComp < d.T - 0.5;
-    const corta = d.sobrante < 0;   // Maze cobrando con el socio bajo su piso: el agujero del mecanismo literal
-    push(corta ? 'Y sin embargo Maze ya cobra' : 'Recién ahí Maze recupera',
-      `La venta siguiente va <b class="m">100% a Maze</b>: ${M(brutoComp)} facturados, ${M(brutoComp * d.f)} limpios. ` +
-      (parcial ? 'Este mes esa venta entró solo a medias, así que Maze cobra apenas una parte. ' : '') +
+  // 4 · Maze recupera lo que resignó mientras el socio cubría su piso
+  const enTramo = Math.min(Math.max(d.neto - d.a, 0), d.tramoMaze);   // cuánto recuperó ya
+  const yaEquiparo = d.neto >= d.b - 0.5;                             // ¿terminó de recuperar?
+  const corta = d.sobrante < 0;   // Maze cobrando con el socio bajo su piso: el agujero del literal
+  if (enTramo > 0.5) {
+    push(corta ? 'Y sin embargo Maze ya cobra' : (yaEquiparo ? 'Maze recupera lo que resignó' : 'Maze está recuperando'),
+      (MODE === 'piso'
+        ? `Mientras cubrías tu piso, Maze resignó ${M(d.resigna)} que le habrían tocado con su ${Math.round(d.s * 100)}%. ` +
+          `Ahora cobra el <b class="m">100%</b> de lo que entra hasta recuperar ${M(d.tramoMaze)} — ` +
+          `pueden ser una venta o varias, según cuánto haya resignado. Este mes lleva ${M(enTramo)}. `
+        : `La venta siguiente va <b class="m">100% a Maze</b>: ${M(enTramo)} limpios. `) +
       (corta
-        ? `<b class="r">Acá está el problema de contar por ventas:</b> Todavía te faltan ${R(-d.sobrante)} para tus fijos y Maze ya se está llevando plata. Con el otro mecanismo esto no pasa.`
-        : `Es lo que compensa haber cobrado cero en los meses flojos: Maze pone el hombro abajo y lo recupera acá.`),
+        ? `<b class="r">Acá está el problema de contar por ventas:</b> todavía te faltan ${R(-d.sobrante)} para tus fijos y Maze ya se está llevando plata. Con el otro mecanismo esto no pasa.`
+        : yaEquiparo
+          ? `Con eso quedaron a mano: de acá en adelante Maze cobra su ${Math.round(d.s * 100)}% y nada más.`
+          : `Todavía le faltan ${M(d.tramoMaze - enTramo)} para equiparar, así que sigue cobrando todo lo que entre.`),
       corta ? 'hit-r' : 'hit-m');
   } else if (d.sobrante >= 0) {
     push('Maze todavía no recupera',
-      `Justo se cubrió tu piso. La venta siguiente es la que va entera a Maze — todavía no llegó.`);
+      `Justo se cubrió tu piso. Lo que entre a partir de acá va a Maze hasta que recupere los ${M(d.tramoMaze)} que resignó.`);
   }
 
   // 5 · de ahí en adelante, parejo
   if (d.b3 > 0) {
+    const netoResto = Math.max(0, d.neto - d.b);
     push(`De ahí en adelante, ${Math.round((1 - d.s) * 100)} / ${Math.round(d.s * 100)}`,
-      `Sobran ${L(d.b3)} facturados (${L(d.b3 * d.f)} limpios). De eso, ${L(d.b3 * d.f * (1 - d.s))} para vos y ${M(d.b3 * d.f * d.s)} para Maze. ` +
+      `Quedan ${L(netoResto)} limpios por repartir: ${L(netoResto * (1 - d.s))} para vos y ${M(netoResto * d.s)} para Maze. ` +
       `Este es el tramo donde los dos ganan juntos: cuanto más se factura, más se llevan los dos.`,
       'hit');
   }
@@ -564,7 +584,11 @@ function renderStory(d) {
     `Te llevás ${L(d.socio)}` +
     (d.sobrante >= 0 ? ` — cubrís tus fijos y te sobran ${L(d.sobrante)}` : ` y te faltan ${R(-d.sobrante)} para tus fijos`) +
     `. Maze se lleva ${M(d.maze)}` +
-    (d.maze < 1 ? ' — o sea, nada.' : `, que es el ${Math.round(d.maze / d.neto * 100)}% de lo que quedó limpio.`));
+    (d.maze < 1 ? ' — o sea, nada.'
+      : `, que es el ${(d.maze / d.neto * 100).toFixed(1).replace('.', ',')}% de lo que quedó limpio` +
+        (MODE === 'piso' && d.maze / d.neto < d.s - 0.001
+          ? ` — <b>menos que su ${Math.round(d.s * 100)}%</b>, porque todavía no terminó de recuperar.`
+          : '.')));
 
   $('story').innerHTML = P.map(p =>
     `<li class="${p.hit || ''}"><div class="st">${p.st}</div><div class="sd">${p.sd}</div></li>`).join('');
@@ -620,19 +644,29 @@ function render() {
   $('fMaze').textContent  = money(d.mazePlano);
 
   const dif = d.maze - d.mazePlano;
+  const pctMaze = d.neto > 0 ? d.maze / d.neto : 0;
   let v;
   if (d.F <= 0) {
     v = 'Sin facturación no hay nada que repartir. No le debés nada a Maze: el riesgo del mes flojo lo asume Maze.';
-  } else if (dif < -1) {
-    v = `Con este acuerdo Maze cobra <b>${money(-dif)} menos</b> que con un 20% plano. A esta facturación el acuerdo te protege: primero se cubre tu piso.`;
+  } else if (MODE === 'piso') {
+    // Con recuperación, Maze converge exactamente a su % y nunca lo pasa
+    if (dif < -1) {
+      v = `Maze se está llevando <b>${money(-dif)} menos</b> que con un ${Math.round(d.s * 100)}% plano, porque primero cobrás vos. ` +
+          `A este nivel se lleva el ${(pctMaze * 100).toFixed(1).replace('.', ',')}% en vez del ${Math.round(d.s * 100)}%.`;
+    } else {
+      v = `Los dos dan lo mismo, y esa es la gracia: una vez que Maze recuperó lo que resignó, cobra <b>exactamente su ${Math.round(d.s * 100)}%</b>, ni un peso más. ` +
+          `La única diferencia con un ${Math.round(d.s * 100)}% plano es el orden: vos cobrás primero, y en los meses flojos Maze se come la diferencia.`;
+    }
   } else if (dif > 1) {
-    v = `Con este acuerdo Maze cobra <b>${money(dif)} más</b> que con un 20% plano, y esa diferencia se mantiene casi fija por más que el mes crezca. Es lo que cuesta que cobres primero cuando el mes viene flojo.`;
+    v = `Con este mecanismo Maze cobra <b>${money(dif)} más</b> que con un ${Math.round(d.s * 100)}% plano — se lleva el ${(pctMaze * 100).toFixed(1).replace('.', ',')}% del neto. ` +
+        `Pasa porque el corte es por cantidad de ventas y no por lo que hace falta recuperar.`;
+  } else if (dif < -1) {
+    v = `Maze cobra <b>${money(-dif)} menos</b> que con un ${Math.round(d.s * 100)}% plano. A esta facturación el acuerdo te protege: primero se cubre tu piso.`;
   } else {
-    v = 'A esta facturación los dos esquemas dan casi lo mismo. Es el punto donde el acuerdo se equilibra.';
+    v = 'A esta facturación los dos esquemas dan casi lo mismo.';
   }
-  if (d.maze < 1 && d.F > 0) {
-    v += ' <span class="warn">A este nivel Maze todavía no cobra nada.</span>';
-  }
+  if (d.maze < 1 && d.F > 0) v += ' <span class="warn">A este nivel Maze todavía no cobra nada.</span>';
+
   $('verdict').innerHTML = v;
 
   renderStory(d);
@@ -647,8 +681,8 @@ document.querySelector('.modes').addEventListener('click', e => {
   document.querySelectorAll('.mbtn').forEach(x => x.classList.toggle('on', x === b));
   $('fNT').hidden = MODE !== 'tickets';
   $('modeNote').innerHTML = MODE === 'piso'
-    ? 'El neto va entero para vos hasta cubrir tus fijos. La venta siguiente compensa a Maze por sostener el riesgo. De ahí en adelante, reparto fijo. <b>Nunca te quedás sin cubrir.</b>'
-    : 'Literal de lo conversado: las primeras ventas van enteras para vos, la siguiente compensa a Maze, de ahí en adelante reparto fijo. <b>Ojo:</b> si la pauta y las comisiones se comen mucho, esas ventas pueden no alcanzar para cubrir tu piso real.';
+    ? 'El neto va entero para vos hasta cubrir tus fijos. Después Maze cobra el 100% hasta recuperar exactamente lo que habría ganado con su % desde el primer peso, y ahí se pasa al reparto fijo. <b>Maze nunca termina cobrando más de su porcentaje.</b>'
+    : 'Literal de lo conversado: las primeras ventas van enteras para vos, la siguiente entera a Maze, de ahí en adelante reparto fijo. <b>Ojo:</b> como el corte es por cantidad de ventas y no por lo que hace falta recuperar, Maze puede terminar cobrando más que su porcentaje.';
   render();
 });
 document.querySelector('.mbtn.on').click();
