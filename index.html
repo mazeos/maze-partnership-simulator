@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maze × Clara · Simulador del acuerdo</title>
+<title>Simulador del acuerdo · Maze</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -94,7 +94,7 @@
   .who .k{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:600}
   .who .v{font-family:'Fraunces',serif;font-weight:700;margin-top:7px;line-height:1;
           font-variant-numeric:tabular-nums;letter-spacing:-1.4px}
-  .who.clara .v{font-size:50px;color:var(--lima);text-shadow:0 0 30px rgba(197,255,73,.32)}
+  .who.socio .v{font-size:50px;color:var(--lima);text-shadow:0 0 30px rgba(197,255,73,.32)}
   .who.maze .v{font-size:36px;color:var(--gold);text-shadow:var(--glow-gold)}
   .who .pct{font-size:12.5px;color:var(--dim);margin-top:9px;font-variant-numeric:tabular-nums}
   .who{transition:background var(--slow) var(--ease)}
@@ -120,10 +120,10 @@
   .band{position:absolute;top:0;bottom:0;transition:left var(--mid) var(--ease),width var(--mid) var(--ease)}
   .band.ghost{opacity:.13}                    /* la estructura: siempre ahí, aunque no se haya llegado */
   .band.live{opacity:1}
-  .b-clara{background:linear-gradient(180deg,#9bcb35,#C5FF49)}
+  .b-socio{background:linear-gradient(180deg,#9bcb35,#C5FF49)}
   .b-maze{background:linear-gradient(180deg,#e8c468,#b6923c)}
   .b-mix{background:linear-gradient(180deg,#e8c468 0 20%,#C5FF49 20% 100%)}
-  .band.live.b-clara{box-shadow:0 0 26px rgba(197,255,73,.34)}
+  .band.live.b-socio{box-shadow:0 0 26px rgba(197,255,73,.34)}
   .band.live.b-maze{box-shadow:0 0 24px rgba(232,196,104,.30)}
   .sales{position:absolute;inset:0;pointer-events:none}
   .sale{position:absolute;top:0;bottom:0;width:1px;background:#0e0f0d;opacity:.3}  /* corte entre ventas */
@@ -144,7 +144,7 @@
   .rule b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
   .rule{transition:opacity var(--slow) var(--ease)}
   .rule.off{opacity:.35}                        /* tramo al que este mes todavía no llegó */
-  .i-clara{background:var(--lima)} .i-maze{background:var(--gold)}
+  .i-socio{background:var(--lima)} .i-maze{background:var(--gold)}
   .i-mix{background:linear-gradient(180deg,#e8c468 0 40%,#C5FF49 40% 100%)}
   .prel-foot{margin-top:13px;font-size:11.5px;color:var(--dim);line-height:1.5}
 
@@ -224,7 +224,7 @@
     h1{font-size:23px}
     .deal-in,.who{padding:18px}
     .dial-val{font-size:42px;letter-spacing:-1.2px}
-    .who.clara .v{font-size:38px;letter-spacing:-1px}
+    .who.socio .v{font-size:38px;letter-spacing:-1px}
     .who.maze .v{font-size:30px}
     .dial-top{gap:4px}
     .dial-top>div:last-child{text-align:left!important}
@@ -247,8 +247,8 @@
 
 <header>
   <div>
-    <h1>Maze <span class="x">×</span> Clara — Simulador del acuerdo</h1>
-    <p class="sub">Mové la facturación del mes y mirá cómo se reparte. Los costos fijos de Clara se cubren primero, siempre.</p>
+    <h1>Simulador del <span class="x">acuerdo</span></h1>
+    <p class="sub">Mové la facturación del mes y mirá cómo se reparte. Tus costos fijos se cubren primero, siempre.</p>
   </div>
   <button class="btn" onclick="window.print()">Descargar en PDF</button>
 </header>
@@ -270,11 +270,11 @@
     <div class="presets" id="presets"></div>
   </div>
   <div class="split">
-    <div class="who clara">
-      <div class="k">Clara se lleva</div>
-      <div class="v" id="vClara">$0</div>
-      <div class="pct" id="pClara"></div>
-      <div id="flagClara"></div>
+    <div class="who socio">
+      <div class="k">Vos te llevás</div>
+      <div class="v" id="vSocio">$0</div>
+      <div class="pct" id="pSocio"></div>
+      <div id="flagSocio"></div>
     </div>
     <div class="who maze">
       <div class="k">Maze se lleva</div>
@@ -320,12 +320,12 @@
       <div class="vs">
         <div class="vsbox on">
           <div class="t">Acuerdo escalonado (el propuesto)</div>
-          <div class="r"><span>Clara</span><span id="wClara">—</span></div>
+          <div class="r"><span>Vos</span><span id="wSocio">—</span></div>
           <div class="r"><span>Maze</span><span id="wMaze">—</span></div>
         </div>
         <div class="vsbox">
           <div class="t">20% plano desde el ticket 1</div>
-          <div class="r"><span>Clara</span><span id="fClara">—</span></div>
+          <div class="r"><span>Vos</span><span id="fSocio">—</span></div>
           <div class="r"><span>Maze</span><span id="fMaze">—</span></div>
         </div>
       </div>
@@ -344,9 +344,9 @@
     </div>
 
     <div class="grp">
-      <h2>Piso de Clara</h2>
+      <h2>Tu piso</h2>
       <div class="field"><label for="iFijos">Costos fijos / mes</label><input type="number" id="iFijos" value="6500" min="0" step="100"></div>
-      <p class="note">Lo que Clara necesita cubrir sí o sí para que su operación no se caiga. El acuerdo lo protege antes de repartir nada.</p>
+      <p class="note">Lo que necesitás cubrir sí o sí para que tu operación no se caiga. El acuerdo lo protege antes de repartir nada.</p>
     </div>
 
     <div class="grp">
@@ -355,7 +355,7 @@
         <button class="mbtn on" data-mode="piso">Hasta cubrir el piso</button>
         <button class="mbtn" data-mode="tickets">Por cantidad de ventas</button>
       </div>
-      <div class="field" id="fNT" hidden><label for="iNT">Ventas 100% para Clara</label><input type="number" id="iNT" value="3" min="0" max="10" step="1"></div>
+      <div class="field" id="fNT" hidden><label for="iNT">Ventas 100% para vos</label><input type="number" id="iNT" value="3" min="0" max="10" step="1"></div>
       <div class="field"><label for="iSplit">Maze de ahí en más (%)</label><input type="number" id="iSplit" value="20" min="0" max="50" step="1"></div>
       <p class="note" id="modeNote"></p>
     </div>
@@ -363,7 +363,7 @@
 </div>
 
 <footer>
-  Cálculo del acuerdo conversado el 14 de julio de 2026. Todos los montos en dólares.<br>
+  Todos los montos en dólares.<br>
   Los supuestos son editables: cambiá cualquier número del panel derecho y el reparto se recalcula solo.
 </footer>
 
@@ -400,10 +400,10 @@ function calc() {
   const f = F > 0 ? neto / F : 0;   // qué porción de cada peso facturado sobrevive
 
   // Los dos umbrales, expresados en facturación bruta:
-  //  u1 = hasta acá todo va a Clara · entre u1 y u2 = la venta que compensa a Maze
+  //  u1 = hasta acá todo va al socio · entre u1 y u2 = la venta que compensa a Maze
   let u1;
   if (MODE === 'piso') {
-    // cuánto hay que facturar para que a Clara le queden sus fijos LIMPIOS
+    // cuánto hay que facturar para que al socio le queden sus fijos LIMPIOS
     u1 = f > 0 ? fijos / f : Infinity;
   } else {
     u1 = nT * T;
@@ -414,13 +414,13 @@ function calc() {
   const mazeHasta = x => Math.min(Math.max(x - u1, 0), T) + Math.max(x - u2, 0) * s;
 
   const maze  = mazeHasta(F) * f;
-  const clara = neto - maze;
+  const socio = neto - maze;
 
   const b3 = Math.max(0, F - u2);   // lo que cae en el tramo de reparto parejo
 
-  return {F, T, A, com, neto, f, fijos, nT, s, u1, u2, b3, mazeHasta, clara, maze,
-          claraPlano: neto * (1 - s), mazePlano: neto * s,
-          sobrante: clara - fijos, tickets: T > 0 ? F / T : 0};
+  return {F, T, A, com, neto, f, fijos, nT, s, u1, u2, b3, mazeHasta, socio, maze,
+          socioPlano: neto * (1 - s), mazePlano: neto * s,
+          sobrante: socio - fijos, tickets: T > 0 ? F / T : 0};
 }
 
 // La barra se construye UNA vez. Después solo se mueven las piezas, para que
@@ -429,8 +429,8 @@ let prelBuilt = false, prelSaleT = null;
 function buildPrel() {
   const el = $('prel');
   el.innerHTML =
-    ['b-clara','b-maze','b-mix'].map((c,i) => `<div class="band ghost ${c}" data-g="${i}"></div>`).join('') +
-    ['b-clara','b-maze','b-mix'].map((c,i) => `<div class="band live ${c}" data-l="${i}"></div>`).join('') +
+    ['b-socio','b-maze','b-mix'].map((c,i) => `<div class="band ghost ${c}" data-g="${i}"></div>`).join('') +
+    ['b-socio','b-maze','b-mix'].map((c,i) => `<div class="band live ${c}" data-l="${i}"></div>`).join('') +
     '<div class="sales" data-sales></div>' +
     '<div class="edge" data-e="0"></div><div class="edge" data-e="1"></div>' +
     '<div class="now" data-now></div>' +
@@ -455,10 +455,10 @@ function renderPrelacion(d) {
   }
 
   const tramos = [
-    {ini: 0, fin: u1, ico: 'i-clara',
+    {ini: 0, fin: u1, ico: 'i-socio',
      txt: MODE === 'piso'
-       ? `<b>Los primeros ${money(u1)}</b> que se facturen van enteros a Clara — con eso le quedan sus ${money(d.fijos)} limpios. Maze todavía no cobra.`
-       : `<b>Las primeras ${d.nT} ventas</b> (${money(u1)}) van enteras a Clara. Maze todavía no cobra.`},
+       ? `<b>Los primeros ${money(u1)}</b> que se facturen van enteros para vos — con eso te quedan tus ${money(d.fijos)} limpios. Maze todavía no cobra.`
+       : `<b>Las primeras ${d.nT} ventas</b> (${money(u1)}) van enteras para vos. Maze todavía no cobra.`},
     {ini: u1, fin: u2, ico: 'i-maze',
      txt: `<b>La venta siguiente</b> — de ${money(u1)} a ${money(u2)} — va entera a Maze. Es lo que compensa haber cobrado cero en los meses flojos.`},
     {ini: u2, fin: MAX, ico: 'i-mix',
@@ -498,12 +498,12 @@ function renderPrelacion(d) {
 function renderStory(d) {
   const P = [];
   const push = (st, sd, hit) => P.push({st, sd, hit});
-  const L = n => `<b>${money(n)}</b>`;          // monto del lado de Clara
+  const L = n => `<b>${money(n)}</b>`;          // monto del lado del socio
   const M = n => `<b class="m">${money(n)}</b>`; // monto del lado de Maze
   const R = n => `<b class="r">${money(n)}</b>`; // lo que falta
 
   if (d.F <= 0) {
-    push('No entró plata', 'Sin ventas no hay nada que repartir. Clara no le debe nada a Maze, y Maze igual sostuvo el mes. Ese riesgo es parte del acuerdo.');
+    push('No entró plata', 'Sin ventas no hay nada que repartir. No le debés nada a Maze, y Maze igual sostuvo el mes. Ese riesgo es parte del acuerdo.');
     $('story').innerHTML = P.map(p => `<li><div class="st">${p.st}</div><div class="sd">${p.sd}</div></li>`).join('');
     return;
   }
@@ -518,19 +518,19 @@ function renderStory(d) {
     `Salen ${R(d.A)} de pauta publicitaria y ${R(d.com)} de comisiones del equipo comercial. Quedan ${L(d.neto)} limpios. ` +
     `Sobre esa base — y no sobre el bruto — se reparte, así el costo de vender lo absorben los dos.`);
 
-  // 3 · el piso de Clara
-  const claraEnPiso = Math.min(d.clara, d.fijos);
+  // 3 · el piso del socio
+  const socioEnPiso = Math.min(d.socio, d.fijos);
   if (d.sobrante < 0) {
-    push('Clara todavía no cubre su piso',
+    push('Todavía no cubrís tu piso',
       (MODE === 'piso'
-        ? `Clara necesita ${L(d.fijos)} para sostener su operación. Los ${L(d.clara)} que quedaron van <b>enteros</b> para ella y aun así le faltan ${R(-d.sobrante)}.`
-        : `Las primeras ${d.nT} ventas (${L(Math.min(d.F, d.u1))} facturados) van enteras a Clara. Pero después de pauta y comisiones eso son ${L(claraEnPiso)}: le faltan ${R(-d.sobrante)} para sus ${L(d.fijos)} de fijos.`),
+        ? `Necesitás ${L(d.fijos)} para sostener tu operación. Los ${L(d.socio)} que quedaron van <b>enteros</b> para vos y aun así te faltan ${R(-d.sobrante)}.`
+        : `Las primeras ${d.nT} ventas (${L(Math.min(d.F, d.u1))} facturados) van enteras para vos. Pero después de pauta y comisiones eso son ${L(socioEnPiso)}: te faltan ${R(-d.sobrante)} para tus ${L(d.fijos)} de fijos.`),
       'hit');
   } else {
-    push('Primero se cubre el piso de Clara',
+    push('Primero se cubre tu piso',
       (MODE === 'piso'
-        ? `Clara necesita ${L(d.fijos)} para sostener su operación. Hacen falta ${L(d.u1)} de facturación para que le queden esos ${L(d.fijos)} limpios, y <b>todo eso va entero para ella</b>. Hasta ahí, Maze cobra cero.`
-        : `Las primeras ${d.nT} ventas — ${L(d.u1)} facturados — van <b>enteras</b> para Clara. Con eso cubre sus ${L(d.fijos)} de fijos. Hasta ahí, Maze cobra cero.`),
+        ? `Necesitás ${L(d.fijos)} para sostener tu operación. Hacen falta ${L(d.u1)} de facturación para que te queden esos ${L(d.fijos)} limpios, y <b>todo eso va entero para vos</b>. Hasta ahí, Maze cobra cero.`
+        : `Las primeras ${d.nT} ventas — ${L(d.u1)} facturados — van <b>enteras</b> para vos. Con eso cubrís tus ${L(d.fijos)} de fijos. Hasta ahí, Maze cobra cero.`),
       'hit');
   }
 
@@ -538,31 +538,31 @@ function renderStory(d) {
   const brutoComp = Math.min(Math.max(d.F - d.u1, 0), d.T);
   if (brutoComp > 0) {
     const parcial = brutoComp < d.T - 0.5;
-    const corta = d.sobrante < 0;   // Maze cobrando con Clara bajo su piso: el agujero del mecanismo literal
+    const corta = d.sobrante < 0;   // Maze cobrando con el socio bajo su piso: el agujero del mecanismo literal
     push(corta ? 'Y sin embargo Maze ya cobra' : 'Recién ahí Maze recupera',
       `La venta siguiente va <b class="m">100% a Maze</b>: ${M(brutoComp)} facturados, ${M(brutoComp * d.f)} limpios. ` +
       (parcial ? 'Este mes esa venta entró solo a medias, así que Maze cobra apenas una parte. ' : '') +
       (corta
-        ? `<b class="r">Acá está el problema de contar por ventas:</b> Clara todavía está ${R(-d.sobrante)} corta de sus fijos y Maze ya se está llevando plata. Con el otro mecanismo esto no pasa.`
+        ? `<b class="r">Acá está el problema de contar por ventas:</b> Todavía te faltan ${R(-d.sobrante)} para tus fijos y Maze ya se está llevando plata. Con el otro mecanismo esto no pasa.`
         : `Es lo que compensa haber cobrado cero en los meses flojos: Maze pone el hombro abajo y lo recupera acá.`),
       corta ? 'hit-r' : 'hit-m');
   } else if (d.sobrante >= 0) {
     push('Maze todavía no recupera',
-      `Justo se cubrió el piso de Clara. La venta siguiente es la que va entera a Maze — todavía no llegó.`);
+      `Justo se cubrió tu piso. La venta siguiente es la que va entera a Maze — todavía no llegó.`);
   }
 
   // 5 · de ahí en adelante, parejo
   if (d.b3 > 0) {
     push(`De ahí en adelante, ${Math.round((1 - d.s) * 100)} / ${Math.round(d.s * 100)}`,
-      `Sobran ${L(d.b3)} facturados (${L(d.b3 * d.f)} limpios). De eso, ${L(d.b3 * d.f * (1 - d.s))} para Clara y ${M(d.b3 * d.f * d.s)} para Maze. ` +
+      `Sobran ${L(d.b3)} facturados (${L(d.b3 * d.f)} limpios). De eso, ${L(d.b3 * d.f * (1 - d.s))} para vos y ${M(d.b3 * d.f * d.s)} para Maze. ` +
       `Este es el tramo donde los dos ganan juntos: cuanto más se factura, más se llevan los dos.`,
       'hit');
   }
 
   // 6 · cierre
   push('Cómo termina el mes',
-    `Clara se lleva ${L(d.clara)}` +
-    (d.sobrante >= 0 ? ` — cubre sus fijos y le sobran ${L(d.sobrante)}` : ` y queda ${R(-d.sobrante)} corta de sus fijos`) +
+    `Te llevás ${L(d.socio)}` +
+    (d.sobrante >= 0 ? ` — cubrís tus fijos y te sobran ${L(d.sobrante)}` : ` y te faltan ${R(-d.sobrante)} para tus fijos`) +
     `. Maze se lleva ${M(d.maze)}` +
     (d.maze < 1 ? ' — o sea, nada.' : `, que es el ${Math.round(d.maze / d.neto * 100)}% de lo que quedó limpio.`));
 
@@ -598,35 +598,35 @@ function render() {
   $('dTickets').textContent = d.tickets.toFixed(1).replace('.', ',') + ' tickets';
   document.querySelectorAll('.pbtn').forEach(b => b.classList.toggle('on', +b.dataset.v === d.F));
 
-  tweenMoney($('vClara'), d.clara);
+  tweenMoney($('vSocio'), d.socio);
   tweenMoney($('vMaze'), d.maze);
-  const tot = d.clara + d.maze;
-  $('pClara').textContent = tot > 0 ? `${Math.round(d.clara / tot * 100)}% de lo que queda` : 'Sin ventas este mes';
+  const tot = d.socio + d.maze;
+  $('pSocio').textContent = tot > 0 ? `${Math.round(d.socio / tot * 100)}% de lo que queda` : 'Sin ventas este mes';
   $('pMaze').textContent  = tot > 0 ? `${Math.round(d.maze / tot * 100)}% de lo que queda` : '—';
 
-  $('flagClara').innerHTML = d.F <= 0 ? ''
+  $('flagSocio').innerHTML = d.F <= 0 ? ''
     : d.sobrante >= 0
-      ? `<span class="flag ok">✓ Cubre sus fijos y le quedan ${money(d.sobrante)}</span>`
-      : `<span class="flag no">Le faltan ${money(-d.sobrante)} para sus fijos</span>`;
+      ? `<span class="flag ok">✓ Cubrís tus fijos y te quedan ${money(d.sobrante)}</span>`
+      : `<span class="flag no">Te faltan ${money(-d.sobrante)} para tus fijos</span>`;
 
   $('rFactura').textContent = money(d.F);
   $('rAds').textContent = '−' + money(d.F > 0 ? d.A : 0);
   $('rCom').textContent = '−' + money(d.com);
   $('rNeto').textContent = money(d.neto);
 
-  $('wClara').textContent = money(d.clara);
+  $('wSocio').textContent = money(d.socio);
   $('wMaze').textContent  = money(d.maze);
-  $('fClara').textContent = money(d.claraPlano);
+  $('fSocio').textContent = money(d.socioPlano);
   $('fMaze').textContent  = money(d.mazePlano);
 
   const dif = d.maze - d.mazePlano;
   let v;
   if (d.F <= 0) {
-    v = 'Sin facturación no hay nada que repartir. Clara no le debe nada a Maze: el riesgo del mes flojo lo asume Maze.';
+    v = 'Sin facturación no hay nada que repartir. No le debés nada a Maze: el riesgo del mes flojo lo asume Maze.';
   } else if (dif < -1) {
-    v = `Con este acuerdo Maze cobra <b>${money(-dif)} menos</b> que con un 20% plano. A esta facturación el acuerdo protege a Clara: primero se cubre su piso.`;
+    v = `Con este acuerdo Maze cobra <b>${money(-dif)} menos</b> que con un 20% plano. A esta facturación el acuerdo te protege: primero se cubre tu piso.`;
   } else if (dif > 1) {
-    v = `Con este acuerdo Maze cobra <b>${money(dif)} más</b> que con un 20% plano, y esa diferencia se mantiene casi fija por más que el mes crezca. Es lo que cuesta que Clara cobre primero cuando el mes viene flojo.`;
+    v = `Con este acuerdo Maze cobra <b>${money(dif)} más</b> que con un 20% plano, y esa diferencia se mantiene casi fija por más que el mes crezca. Es lo que cuesta que cobres primero cuando el mes viene flojo.`;
   } else {
     v = 'A esta facturación los dos esquemas dan casi lo mismo. Es el punto donde el acuerdo se equilibra.';
   }
@@ -647,8 +647,8 @@ document.querySelector('.modes').addEventListener('click', e => {
   document.querySelectorAll('.mbtn').forEach(x => x.classList.toggle('on', x === b));
   $('fNT').hidden = MODE !== 'tickets';
   $('modeNote').innerHTML = MODE === 'piso'
-    ? 'El neto va entero a Clara hasta cubrir sus fijos. La venta siguiente compensa a Maze por sostener el riesgo. De ahí en adelante, reparto fijo. <b>Clara nunca queda corta.</b>'
-    : 'Literal de lo conversado: las primeras ventas van enteras a Clara, la siguiente compensa a Maze, de ahí en adelante reparto fijo. <b>Ojo:</b> si la pauta y las comisiones se comen mucho, esas ventas pueden no alcanzar para cubrir el piso real de Clara.';
+    ? 'El neto va entero para vos hasta cubrir tus fijos. La venta siguiente compensa a Maze por sostener el riesgo. De ahí en adelante, reparto fijo. <b>Nunca te quedás sin cubrir.</b>'
+    : 'Literal de lo conversado: las primeras ventas van enteras para vos, la siguiente compensa a Maze, de ahí en adelante reparto fijo. <b>Ojo:</b> si la pauta y las comisiones se comen mucho, esas ventas pueden no alcanzar para cubrir tu piso real.';
   render();
 });
 document.querySelector('.mbtn.on').click();
